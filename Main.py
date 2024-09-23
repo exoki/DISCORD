@@ -1,3 +1,5 @@
+from datetime import timedelta
+from discord.utils import utcnow
 import discord
 from discord.ext import commands, tasks
 from DANNIE import *
@@ -43,6 +45,39 @@ async def kick(ctx: discord.Message, user: discord.Member, *, reason=None):
     await user.kick(reason=reason)
 
 
+@bot.command(name="mute")
+async def timeout(ctx, member: discord.Member, mute_time=1, *, reason='Нарушение правил сервера'):
+    time = utcnow()+timedelta(minutes=mute_time)
+    print(time)
+    await member.timeout(time)
+    await ctx.send(f'Участник {member.mention} был замучен.\nПричина: {reason}')
+
+
+@bot.command(name="ban")
+async def ban(ctx: discord.Message, user: discord.Member, *, reason=None):
+    await user.ban(reason=reason)
+    await ctx.channel.send(file=discord.File("D:\Изображения\Картинки\d.jpg"))
+
+
+@bot.command(name="join")
+async def join(ctx: discord.Message):
+    print(ctx.author.voice)
+    if ctx.author.voice is None:
+        await ctx.send('чел не в канале')
+        return
+    kanal = ctx.author.voice.channel
+    if ctx.voice_client is not None:
+        pass
+    else:
+        await kanal.connect()
+
+
+@bot.command(name="unban")
+async def kick(ctx: discord.Message, user: str):
+    pass
+    #await ctx.channel.send(file=discord.File("D:\Изображения\Картинки\d.jpg"))
+
+
 @bot.event
 async def on_message(ctx: discord.Message):
     if ctx.author == bot.user:
@@ -52,11 +87,12 @@ async def on_message(ctx: discord.Message):
     if ctx.content.lower() in blacklist:
         await ctx.delete()
         await ctx.channel.send(f"{ctx.author.mention} написал - {ctx.content.lower()}")
+        await ctx.channel.send(file=discord.File("D:\Изображения\Картинки\d.jpg"))
+
 
 bot.run(TOKEN)
 
 
 """
-1. Просто сделать так, что если юзер написал плохое слово на сервере, то отправить ему какую-то картинку или гифку
-Загуглить: "как отправить картинку в дискорд на пайтоне"
+1. 
 """
