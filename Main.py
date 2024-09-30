@@ -1,4 +1,6 @@
 from datetime import timedelta
+
+from discord import FFmpegPCMAudio
 from discord.utils import utcnow
 import discord
 from discord.ext import commands, tasks
@@ -61,7 +63,7 @@ async def ban(ctx: discord.Message, user: discord.Member, *, reason=None):
 
 @bot.command(name="join")
 async def join(ctx: discord.Message):
-    print(ctx.author.voice)
+    #print(ctx.author.voice)
     if ctx.author.voice is None:
         await ctx.send('чел не в канале')
         return
@@ -70,6 +72,26 @@ async def join(ctx: discord.Message):
         pass
     else:
         await kanal.connect()
+
+
+@bot.command(name="leave")
+async def leave(ctx: discord.Message):
+    if ctx.voice_client is None:
+        await ctx.send('чел не в канале')
+        return
+    await ctx.voice_client.disconnect()
+
+
+@bot.command(name="play")
+async def play(ctx: discord.Message, link):
+    links[link] = ".mp3"
+    print(links)
+    await join(ctx)
+    audio_source = FFmpegPCMAudio(executable="ffmpeg", source="224-MONSTER-BPM130.mp3")
+    if not ctx.voice_client.is_playing():
+        ctx.voice_client.play(audio_source)
+    else:
+        await ctx.send('музыка в канале')
 
 
 @bot.command(name="unban")
@@ -82,7 +104,7 @@ async def kick(ctx: discord.Message, user: str):
 async def on_message(ctx: discord.Message):
     if ctx.author == bot.user:
         return
-    print(ctx.content)
+    #print(ctx.content)
     await bot.process_commands(ctx)
     if ctx.content.lower() in blacklist:
         await ctx.delete()
@@ -94,5 +116,8 @@ bot.run(TOKEN)
 
 
 """
-1. 
+1. Подтвердить почту на спотике, создать своё приложение (см. в документации спотифай апи)
+2. В коде сделать проверку, что если ссылка уже есть в словаре, то написать "ок", иначе - "не ок"
+3. Посмотреть за лимиты в спотифай апи, есть ли они вообще и сколько доступно для бесплатного использования
+4. Загуглить: "как достать название трека в spotify api python", это важно, просто посмотреть примеры и даже затестить ;)
 """
