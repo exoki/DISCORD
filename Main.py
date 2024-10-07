@@ -5,6 +5,7 @@ from discord.utils import utcnow
 import discord
 from discord.ext import commands, tasks
 from DANNIE import *
+from test import music
 
 # Создаем экземпляр бота
 intents = discord.Intents.default()
@@ -85,9 +86,11 @@ async def leave(ctx: discord.Message):
 @bot.command(name="play")
 async def play(ctx: discord.Message, link):
     links[link] = ".mp3"
+    print(link)
+    mp3 = music(link)
     print(links)
     await join(ctx)
-    audio_source = FFmpegPCMAudio(executable="ffmpeg", source="224-MONSTER-BPM130.mp3")
+    audio_source = FFmpegPCMAudio(executable="ffmpeg", source=mp3)
     if not ctx.voice_client.is_playing():
         ctx.voice_client.play(audio_source)
     else:
